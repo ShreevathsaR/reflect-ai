@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from dotenv import load_dotenv
-# from backend.routes.ai_features import router as ai_router
+from backend.routes.ai_features import router as ai_router
 import os
 # import aiohttp
 
@@ -18,7 +18,7 @@ prompt = (
 HEADER={"Authorization":f"Bearer {HF_TOKEN}"}
 
 app = FastAPI()
-# app.include_router(ai_router, prefix="/api/v1", tags=["AI"])
+app.include_router(ai_router, prefix="/api/v1", tags=["AI"])
 
 @app.get('/')
 def welcome():
