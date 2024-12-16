@@ -1,4 +1,4 @@
-from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
+from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, AsyncEngine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from dotenv import load_dotenv
@@ -18,7 +18,7 @@ DB_NAME = os.getenv("DB_NAME")
 DB_URL = f"postgresql+asyncpg://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 
 #intermediate between the code and the database
-engine = create_async_engine(DB_URL, echo=True)
+engine: AsyncEngine = create_async_engine(DB_URL, echo=True)
 
 #used to make the changes
 async_session_local = sessionmaker(

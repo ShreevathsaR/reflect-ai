@@ -25,10 +25,16 @@ HEADER={"Authorization":f"Bearer {HF_TOKEN}"}
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-     print("server is running...")
-     await connect_db()
-     yield
-     print("server is shutting down...")
+    print("server is running...")
+    db_pool = await connect_db()
+
+    try:
+        yield
+    finally:
+        print("closing the connection to database...")
+        await db_pool.close()
+        print("server is shutting down...")
+
 
 app = FastAPI(lifespan=lifespan)
 # app.include_router(ai_router, prefix="/api/v1", tags=["AI"])
