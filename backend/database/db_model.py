@@ -10,13 +10,6 @@ from datetime import datetime, timezone
 Base = declarative_base()
 
 
-
-
-""" 
-utilizes typehint with Mapped & mapped_column()
-Mapped[...] (typehint), mapped_column(...) ----> map type = map this attributes to the column
-"""
-
 # Table for users
 class User(Base):
     __tablename__ = 'users'
