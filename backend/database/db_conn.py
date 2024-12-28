@@ -1,14 +1,16 @@
-import asyncpg
-from database.db import engine, Base, DB_HOST, DB_NAME, DB_PASSWORD, DB_PORT, DB_USER
+from sqlalchemy import text
+
+from database.db import engine
+from database.db_model import Base
 
 
 
-async def create_tables():
+
+async def create_table():
     try:
         async with engine.begin() as conn:
             await conn.run_sync(Base.metadata.create_all)
         print("tables created successfully")
-
     except Exception as e:
         print(f"error while creating tables: {e}")
         raise e
@@ -16,17 +18,12 @@ async def create_tables():
 
 async def connect_db():
     try:
-        conn = await asyncpg.connect(
-            user=DB_USER,
-            password=DB_PASSWORD,
-            host=DB_HOST,
-            port=DB_PORT,
-            database=DB_NAME
-        )
-        await create_tables()  # Create tables if they don't exist
-        print(f"connected to the database '{DB_NAME}' successfully")
-        return conn
-
+        async with engine.connect() as conn:
+            result = await conn.execute(text("SELECT 1"))
+            if result.scalar() == 1:
+                print(f"connected to the database successfully")
+            else:
+                print("failed to verify connection to the database")
     except Exception as e:
         print(f"error connecting to the database: {e}")
         raise e

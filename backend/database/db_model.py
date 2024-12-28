@@ -1,8 +1,13 @@
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy import Integer, String, ForeignKey, TIMESTAMP
 from sqlalchemy.orm import relationship
+from sqlalchemy.ext.declarative import declarative_base
 from datetime import datetime, timezone
-from database.db import Base
+
+
+
+
+Base = declarative_base()
 
 
 
@@ -21,9 +26,10 @@ class User(Base):
     password: Mapped[str] = mapped_column(String, nullable=False)
     mbti_type: Mapped[str] = mapped_column(String, nullable=True)
     created_at: Mapped[datetime] = mapped_column(TIMESTAMP, default=lambda: datetime.now(timezone.utc))
+    #created_at: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=True), server_default="CURRENT_TIMESTAMP") #for database-managed timestamps
 
-    journal_entries = relationship('JournalEntry', back_populates='users')
-    monthly_reports = relationship('MonthlyReport', back_populates='users')
+    journal_entries = relationship('JournalEntry', back_populates='user')
+    monthly_reports = relationship('MonthlyReport', back_populates='user')
 
 
 # Table for journal entries (by users)
@@ -36,7 +42,7 @@ class JournalEntry(Base):
     entry_date: Mapped[datetime] = mapped_column(TIMESTAMP, default=lambda: datetime.now(timezone.utc))
 
     user = relationship('User', back_populates='journal_entries')
-    ai_responses = relationship('AIResponse', back_populates='journal_entries')
+    ai_responses = relationship('AIResponse', back_populates='journal_entry')
     sentiment_analysis = relationship('SentimentAnalysis', back_populates='journal_entry', uselist=False)
 
 
@@ -71,7 +77,7 @@ class MonthlyReport(Base):
 
     report_id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
     user_id: Mapped[int] = mapped_column(Integer, ForeignKey('users.user_id'), nullable=False)
-    report__date: Mapped[datetime] = mapped_column(TIMESTAMP, default=lambda: datetime.now(timezone.utc))
+    report_date: Mapped[datetime] = mapped_column(TIMESTAMP, default=lambda: datetime.now(timezone.utc))
     report_data: Mapped[str] = mapped_column(String, nullable=False)
 
     user = relationship('User', back_populates='monthly_reports')

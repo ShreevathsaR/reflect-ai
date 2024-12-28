@@ -1,42 +1,37 @@
 from fastapi import FastAPI
-from dotenv import load_dotenv
-import os
-# import aiohttp
+import logging
 from contextlib import asynccontextmanager
 
-# from backend.routes.ai_features import router as ai_router
 from database.db_conn import connect_db
+from database.db_conn import create_table
 
 
 
-load_dotenv()
 
-HF_TOKEN=os.getenv("HUGGING_FACE_TOKEN")
-API_URL=os.getenv("API_URL")
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
-prompt = (
-    """The user has the personality type INFJ. They are feeling anxious today,
-    and their journal sentiment is negative. The journal discusses topics like 
-    career, stress, and time management. Based on this information, generate a reflective journal prompt."""
-)
 
-HEADER={"Authorization":f"Bearer {HF_TOKEN}"}
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    print("server is running...")
-    db_pool = await connect_db()
+    logger.info("server is running...")
 
+    db_conn = None
     try:
+        db_conn = await connect_db()
+        logger.info("database connection pool initialized")
         yield
+    except Exception as e:
+        logger.error(f"error during server startup: {e}", exc_info=True)
+        raise e
     finally:
-        print("closing the connection to database...")
-        await db_pool.close()
-        print("server is shutting down...")
+        if db_conn:
+            logger.info("closing the database connection pool...")
+            await db_conn.close()
+            logger.info("database connection pool closed")
+        logger.info("shutting down...")
 
 
 app = FastAPI(lifespan=lifespan)
-# app.include_router(ai_router, prefix="/api/v1", tags=["AI"])
-
-
