@@ -31,7 +31,7 @@ class JournalEntry(Base):
 
     entry_id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
     user_id: Mapped[int] = mapped_column(Integer, ForeignKey('users.user_id'), nullable=False)
-    entry_text: Mapped[str] = mapped_column(String, nullable=False)
+    journal: Mapped[str] = mapped_column(String, nullable=False)
     entry_date: Mapped[datetime] = mapped_column(TIMESTAMP, default=lambda: datetime.now(timezone.utc))
 
     user = relationship('User', back_populates='journal_entries')
@@ -45,7 +45,7 @@ class AIResponse(Base):
 
     response_id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
     entry_id: Mapped[int] = mapped_column(Integer, ForeignKey('journal_entries.entry_id'), nullable=False)
-    response_text: Mapped[str] = mapped_column(String, nullable=False)
+    response: Mapped[str] = mapped_column(String, nullable=False)
     created_at: Mapped[datetime] = mapped_column(TIMESTAMP, default=lambda: datetime.now(timezone.utc))
 
     journal_entry = relationship('JournalEntry', back_populates='ai_responses')
@@ -70,7 +70,7 @@ class MonthlyReport(Base):
 
     report_id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
     user_id: Mapped[int] = mapped_column(Integer, ForeignKey('users.user_id'), nullable=False)
+    report: Mapped[str] = mapped_column(String, nullable=False)
     report_date: Mapped[datetime] = mapped_column(TIMESTAMP, default=lambda: datetime.now(timezone.utc))
-    report_data: Mapped[str] = mapped_column(String, nullable=False)
 
     user = relationship('User', back_populates='monthly_reports')

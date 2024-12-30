@@ -3,14 +3,12 @@ import logging
 from contextlib import asynccontextmanager
 
 from database.db_conn import connect_db
-from database.db_conn import create_table
 
 
 
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-
 
 
 
